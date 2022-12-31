@@ -12,10 +12,12 @@ class ViewController: UIViewController {
     let shape = CAShapeLayer()
     var durationTimer = 100
     var trackPath: UIProgressView!
+    var text: String?
+
     
     private let label: UILabel = {
         let label = UILabel()
-        label.text = "Days of "
+        label.text = "Days of"
         label.font = .systemFont(ofSize: 25, weight: .bold)
         label.adjustsFontSizeToFitWidth = true
         label.minimumScaleFactor = 0.5
@@ -31,8 +33,14 @@ class ViewController: UIViewController {
         label.sizeToFit()
         view.addSubview(label)
         label.center = view.center
-        
        
+        
+        let label = UILabel(frame: CGRect(x: 0, y: 0, width: 200, height: 21))
+        label.center = CGPoint(x: 200, y: 100)
+        label.textAlignment = .center
+        label.text = "#100DaysOf\(text!)"
+        self.view.addSubview(label)
+        label.textColor = UIColor(red: 0.3819528222, green: 0.8536232114, blue: 0.4215450883, alpha: 1)
         let circlePath = UIBezierPath(arcCenter: view.center,
                                       radius: 150,
                                       startAngle: -(.pi / 2),
