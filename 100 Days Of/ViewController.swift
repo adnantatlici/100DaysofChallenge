@@ -9,15 +9,20 @@ import UIKit
 
 class ViewController: UIViewController {
     
-    /// layer that draws a cubic Bezier spline in its coordinate space.
     let shape = CAShapeLayer()
     var durationTimer = 100
+    var trackPath: UIProgressView!
     
     private let label: UILabel = {
         let label = UILabel()
         label.text = "Days of "
         label.font = .systemFont(ofSize: 25, weight: .bold)
+        label.adjustsFontSizeToFitWidth = true
+        label.minimumScaleFactor = 0.5
+        label.numberOfLines = 1
+        
         return label
+        
     }()
     
     override func viewDidLoad() {
@@ -27,14 +32,14 @@ class ViewController: UIViewController {
         view.addSubview(label)
         label.center = view.center
         
-        ///path that consists of straight and curved line segments that you can render in your custom views.
+       
         let circlePath = UIBezierPath(arcCenter: view.center,
-                                      radius: 150, //size of the circle
-                                      startAngle: -(.pi / 2), //.pi = 180/2 = 90
-                                      endAngle: .pi * 2, //.pi = 180*2 = 360
-                                      clockwise: true) // draws the circle in clockwise fashion way.
+                                      radius: 150,
+                                      startAngle: -(.pi / 2),
+                                      endAngle: .pi * 2,
+                                      clockwise: true)
         
-        let trackPath = CAShapeLayer() ///A layer that draws a cubic Bezier spline in its coordinate space.
+        let trackPath = CAShapeLayer()
         trackPath.path = circlePath.cgPath
         trackPath.fillColor = UIColor.clear.cgColor
         trackPath.strokeColor = UIColor(red: 0.3001555204, green: 0.3101341724, blue: 0.5038499832, alpha: 1).cgColor
@@ -48,21 +53,36 @@ class ViewController: UIViewController {
         shape.fillColor = UIColor.clear.cgColor
         shape.strokeEnd = 0
         
+        
         view.layer.addSublayer(shape)
      
     }
-    
-    //animation method
-    
+        
     @objc func labelTapped(_ sender: UITapGestureRecognizer) {
         let animation = CABasicAnimation(keyPath: "strokeEnd")
-        animation.toValue = 1
+        animation.fromValue = shape.strokeEnd
+        animation.toValue = min(1, shape.strokeEnd + 0.01)
         animation.duration = CFTimeInterval(durationTimer)
         animation.fillMode = .forwards
         animation.isRemovedOnCompletion = true
         shape.add(animation, forKey: "animation")
+        shape.strokeEnd = animation.toValue as! CGFloat
+        let percent = Int(shape.strokeEnd * 100)
+        label.text = "\(percent) of Days"
         
+        if shape.strokeEnd == 1 {
+               shape.removeAnimation(forKey: "animation")
+               shape.strokeEnd = 0
+               label.text = "Days of"
+           } else {
+               shape.strokeEnd = animation.toValue as! CGFloat
+           }
+        
+
     }
+
+    
+    
     
     func setupLabelTap() {
         let labelTap = UITapGestureRecognizer(target: self, action: #selector(self.labelTapped(_:)))
@@ -73,4 +93,14 @@ class ViewController: UIViewController {
     
    
     
+}
+
+extension ViewController: CAAnimationDelegate {
+    func animationDidStop(_ anim: CAAnimation, finished flag: Bool) {
+        if flag && shape.strokeEnd == 1 {
+            shape.removeAnimation(forKey: "animation")
+            shape.strokeEnd = 0
+            label.text = "Days of"
+        }
+    }
 }
