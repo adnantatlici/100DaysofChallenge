@@ -35,6 +35,7 @@ class ViewController: UIViewController {
         label.center = view.center
        
         
+        
         let label = UILabel(frame: CGRect(x: 0, y: 0, width: 200, height: 21))
         label.center = CGPoint(x: 200, y: 100)
         label.textAlignment = .center
@@ -66,6 +67,14 @@ class ViewController: UIViewController {
      
     }
         
+    override func viewDidAppear(_ animated: Bool) {
+        
+         let savedProgress = UserDefaults.standard.double(forKey: "animationProgress")
+               
+          if savedProgress > 0 {
+              shape.strokeEnd = CGFloat(savedProgress)          }
+    }
+    
     @objc func labelTapped(_ sender: UITapGestureRecognizer) {
         let animation = CABasicAnimation(keyPath: "strokeEnd")
         animation.fromValue = shape.strokeEnd
@@ -77,13 +86,20 @@ class ViewController: UIViewController {
         shape.strokeEnd = animation.toValue as! CGFloat
         let percent = Int(shape.strokeEnd * 100)
         label.text = "\(percent) of Days"
-        
+                        
+                // Save the current shape.strokeEnd value to UserDefaults
+        UserDefaults.standard.set(Float(shape.strokeEnd), forKey: "animationProgress")
+        print("Saved animation progress: \(shape.strokeEnd)")
+
         if shape.strokeEnd == 1 {
-               shape.removeAnimation(forKey: "animation")
-               shape.strokeEnd = 0
-               label.text = "Days of"
-           } else {
-               shape.strokeEnd = animation.toValue as! CGFloat
+                      shape.removeAnimation(forKey: "animation")
+                      shape.strokeEnd = 0
+                      label.text = "Days of"
+                       performSegue(withIdentifier: "toNewGoals", sender: nil)
+            
+                  } else {
+                      shape.strokeEnd = animation.toValue as! CGFloat
+                      
            }
         
 
