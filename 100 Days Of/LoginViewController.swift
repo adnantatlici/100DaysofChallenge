@@ -16,6 +16,10 @@ class LoginViewController: UIViewController {
         super.viewDidLoad()
 
         view.backgroundColor = #colorLiteral(red: 0.1275785565, green: 0.1375774741, blue: 0.2218845487, alpha: 1)
+        
+        UserDefaults.standard.object(forKey: "goals")
+        
+        let getGoals = newGoals
        
         
         let label = UILabel(frame: CGRect(x: 0, y: 0, width: 200, height: 21))
@@ -60,7 +64,7 @@ class LoginViewController: UIViewController {
     }
     
     @objc func kaydetButtonTapped() {
-        
+        UserDefaults.standard.set(textField.text, forKey: "goals")
         performSegue(withIdentifier: "toVC", sender: self)
         
         
